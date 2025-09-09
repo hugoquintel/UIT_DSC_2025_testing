@@ -4,12 +4,13 @@ from pyvi import ViTokenizer
 from torch.utils.data import Dataset
 
 def get_labels(df):
-    labels = df['label'].unique()
+    labels = df['labels'].unique()
     labels_to_ids = {label:index for index, label in enumerate(labels)}
     ids_to_labels = {index:label for label, index in labels_to_ids.items()}
     return labels_to_ids, ids_to_labels
 
-def preprocess_data(args, df, tokenizer, labels_to_ids):
+def preprocess_data(args, path, dataset, tokenizer):
+    df = pd.read_csv(path / f'{dataset}.csv')
     prompts = df['prompt'].tolist()
     contexts = df['context'].tolist()
     responses = df['response'].tolist()
@@ -21,12 +22,11 @@ def preprocess_data(args, df, tokenizer, labels_to_ids):
                                         truncation=True, max_length=args.PROMPT_CONTEXT_MAX_TOKEN)
     responses_output = tokenizer(responses, padding='max_length',
                                  truncation=True, max_length=args.RESPONSE_MAX_TOKEN)
-    labels = df['label'].map(labels_to_ids)
     data_dict = {'prompts_contexts_input_ids': prompts_contexts_output.input_ids,
                  'prompts_contexts_attention_mask': prompts_contexts_output.attention_mask,
                  'responses_input_ids': responses_output.input_ids,
                  'responses_attention_mask': responses_output.attention_mask,
-                 'labels': labels}
+                 'labels': df['label']}
     return pd.DataFrame(data_dict)
 
 class LLMHallucinationDataset(Dataset):
