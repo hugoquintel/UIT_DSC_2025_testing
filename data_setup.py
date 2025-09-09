@@ -9,7 +9,6 @@ def get_labels(df):
     ids_to_labels = {index:label for label, index in labels_to_ids.items()}
     return labels_to_ids, ids_to_labels
 
-
 def preprocess_data(args, df, tokenizer, labels_to_ids):
     prompts = df['prompt'].tolist()
     contexts = df['context'].tolist()
