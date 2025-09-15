@@ -48,7 +48,7 @@ def log_progress(args, epoch, loss_total, loss_average, path, cls_report=None):
 
 def export_prediction(df, labels_pred, ids_to_labels, path, 
                       csv_name='submit.csv', zip_name='submit'):
-    pred_dict = {'id': df['id'].tolist(),
+    pred_dict = {'id': df['ids'].tolist(),
                  'predict_label': map(ids_to_labels.get, labels_pred)}
     pd.DataFrame(pred_dict).to_csv(path / csv_name, index=False)
     shutil.make_archive(path / zip_name, 'zip', path, csv_name)
