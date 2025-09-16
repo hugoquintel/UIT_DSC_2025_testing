@@ -22,7 +22,8 @@ def preprocess_data(args, path, dataset, tokenizer):
                                         truncation=True, max_length=args.PROMPT_CONTEXT_MAX_TOKEN)
     responses_output = tokenizer(responses, padding='max_length',
                                  truncation=True, max_length=args.RESPONSE_MAX_TOKEN)
-    data_dict = {'prompts_contexts_input_ids': prompts_contexts_output.input_ids,
+    data_dict = {'ids': df['id'].tolist(),
+                 'prompts_contexts_input_ids': prompts_contexts_output.input_ids,
                  'prompts_contexts_attention_mask': prompts_contexts_output.attention_mask,
                  'responses_input_ids': responses_output.input_ids,
                  'responses_attention_mask': responses_output.attention_mask,
