@@ -16,7 +16,6 @@ def make_dummy_data(data_path, dataset, dummy_path, no_samples, dev_size):
         dev_labels_count[label] = round(dummy_labels_count[label]*dev_size)
         train_labels_count[label] = dummy_labels_count[label]-dev_labels_count[label]
 
-
     train_df, dev_df = pd.DataFrame(), pd.DataFrame()
     for label in unique_labels:
         train_df = pd.concat([train_df, df[df['label']==label].iloc[:train_labels_count[label]]], axis=0)

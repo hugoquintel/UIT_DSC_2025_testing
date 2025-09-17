@@ -109,7 +109,6 @@ def run():
         print(f'{key}: {value}')
     print('------------------------')
 
-
     best_macro_f1 = 0
     log_arguments(args, info_path)
     for epoch in tqdm.trange(args.EPOCHS, file=sys.stdout):
@@ -161,7 +160,7 @@ def run():
         print('\n\n\n******TESTING THE BEST MODEL******')
         labels_dev_true, labels_dev_pred = test_best_model(args, labels_to_ids, dev_dataloader, model_path,
                                                            prompts_contexts_plm, responses_plm, cls)
-        cls_report, _, _ = get_metrics(labels_dev_true, labels_dev_pred, labels_to_ids)
+        cls_report, _ = get_metrics(labels_dev_true, labels_dev_pred, labels_to_ids)
         print('[+] METRICS:')
         print(f'Classification report:\n{cls_report}')
         if args.PLOT_CONFMAT:
