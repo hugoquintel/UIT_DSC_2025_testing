@@ -9,13 +9,11 @@ def make_dummy_data(data_path, dataset, dummy_path, no_samples, dev_size):
     labels_count = df['label'].value_counts()
     unique_labels = labels_count.index
     no_labels = labels_count.sum()
-
     dummy_labels_count = {label: round(value/no_labels*no_samples) for label, value in zip(unique_labels, labels_count)}
     train_labels_count, dev_labels_count = {}, {}
     for label in dummy_labels_count:
         dev_labels_count[label] = round(dummy_labels_count[label]*dev_size)
         train_labels_count[label] = dummy_labels_count[label]-dev_labels_count[label]
-
     train_df, dev_df = pd.DataFrame(), pd.DataFrame()
     for label in unique_labels:
         train_df = pd.concat([train_df, df[df['label']==label].iloc[:train_labels_count[label]]], axis=0)
@@ -41,7 +39,7 @@ def preprocess_data(args, path, dataset, tokenizer):
                  'prompts_contexts_attention_mask': prompts_contexts_output.attention_mask,
                  'responses_input_ids': responses_output.input_ids,
                  'responses_attention_mask': responses_output.attention_mask,
-                 'labels': df['label']}
+                 'labels': df[[column for column in df.columns if 'label' in column]]}
     return pd.DataFrame(data_dict)
 
 def get_labels(df):

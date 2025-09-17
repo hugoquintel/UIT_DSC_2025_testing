@@ -166,5 +166,6 @@ def run():
         if args.PLOT_CONFMAT:
             plot_confmat(args, labels_dev_true, labels_dev_pred, labels_to_ids)
         if args.EXPORT_PREDICTION:
-            export_prediction(labels_dev_pred, ids_to_labels, pred_path, 'best_prediction.csv')
+            export_prediction(dev_df, labels_dev_pred, ids_to_labels, pred_path, 
+                              csv_name=f'best_prediction.csv', zip_name='best_prediction')
         print('**************FINISH**************')

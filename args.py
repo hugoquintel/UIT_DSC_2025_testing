@@ -10,11 +10,11 @@ def get_arguments():
     parser.add_argument('--PLM', type=str, default='Fsoft-AIC/videberta-base',
                         help='HuggingFace pre-trained language model (https://huggingface.co/models)')
     parser.add_argument('--PROMPT_CONTEXT_MAX_TOKEN', type=int, default=350,
-                        help='Max number of tokens when tokenized by the pre-trained tokenizer')
-    parser.add_argument('--RESPONSE_MAX_TOKEN', type=int, default=90,
-                        help='Max number of tokens when tokenized by the pre-trained tokenizer')
+                        help='Max number of tokens when tokenized by the pre-trained tokenizer for the prompt and context pair')
+    parser.add_argument('--RESPONSE_MAX_TOKEN', type=int, default=100,
+                        help='Max number of tokens when tokenized by the pre-trained tokenizer for the response')
     parser.add_argument('--WORD_SEG', type=strtobool, default=True,
-                        help='Apply word segmentation to the images\' captions; this only works with Vietnamese \
+                        help='Apply word segmentation to the inputs; this only works with Vietnamese \
                               (should be set to True only when working with language models requiring word segmentation, e.g., PhoBert).')
     parser.add_argument('--PLM_LR', type=float, default=1e-5,
                         help='Learning rate for pre-trained language model')
@@ -45,9 +45,9 @@ def get_arguments():
                         help='The proportion of the dummy dataset to include in the dev split (between 0.0 and 1.0)')
     
     parser.add_argument('--CONTINUE_FROM_CHECKPOINT', type=strtobool, default=False,
-                        help='asdasd')
+                        help='Whether to continue training from a previously saved model')
     parser.add_argument('--CHECKPOINT_PATH', type=str,
-                        help='asdasd')
+                        help='Path to the saved model if continuing training from one')
     
     parser.add_argument('--GET_METRICS', type=strtobool, default=False,
                         help='Perform evaluation on the devset and show the metrics - sklearn classification report \
@@ -64,11 +64,11 @@ def get_arguments():
     parser.add_argument('--SAVE_PATH', type=str, default='saved_models',
                         help='Create a folder (if not exist) to store all the saved models')
     parser.add_argument('--EXPORT_PREDICTION', type=strtobool, default=False,
-                        help='Export the prediction result (.csv)')
+                        help='Whether to export the predicted result')
     parser.add_argument('--PREDICTION_PATH', type=str, default='prediction',
                         help='Create a folder (if not exist) to store the prediction file')
     parser.add_argument('--PREDICTION_PER_EPOCH', type=strtobool, default=False,
-                        help='Export the prediction result at each epoch, if no then just at the latest epoch')
+                        help='Whether to export the prediction result at each epoch, if no then just at the latest epoch')
     parser.add_argument('--TEST_BEST_MODEL', type=strtobool, default=True,
                         help='Evaluate the performance of the best model on the valset (SAVE_MODEL and GET_METRICS must be True)')
     parser.add_argument('--INFO_PATH', type=str, default='info',
