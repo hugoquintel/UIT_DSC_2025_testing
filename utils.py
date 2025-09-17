@@ -1,3 +1,4 @@
+import os
 import torch
 import shutil
 import pandas as pd
@@ -49,15 +50,12 @@ def test_step(args, prompts_contexts_plm,
             labels_pred.extend(logit.argmax(dim=-1).tolist())
     return labels_true, labels_pred
 
-
-
 def get_metrics(labels_true, labels_pred, labels_to_ids):
     cls_report = metrics.classification_report(labels_true, labels_pred, target_names=labels_to_ids,
                                                labels=tuple(labels_to_ids.values()), zero_division=0.0, digits=5)
     macro_f1 = metrics.f1_score(labels_true, labels_pred, 
                                 labels=tuple(labels_to_ids.values()), average='macro', zero_division=0.0)
-    accuracy = metrics.accuracy_score(labels_true, labels_pred)
-    return cls_report, macro_f1, accuracy
+    return cls_report, macro_f1
 
 def plot_confmat(args, labels_true, labels_pred, labels_to_ids):
     disp = metrics.ConfusionMatrixDisplay.from_predictions(labels_true, labels_pred,
@@ -69,12 +67,13 @@ def plot_confmat(args, labels_true, labels_pred, labels_to_ids):
     fig.set_figheight(args.FIG_SIZE)
     plt.show()
 
-def save_model(pvm, plm, encoder, optimizer, path, model_name):
+def save_model(prompts_contexts_plm, responses_plm, 
+               cls, optimizer, path, model_name):
     save_path = path / model_name
     print(f'** Saving model to: {save_path} **')
-    state = {"pvm": pvm.state_dict(),
-             "plm": plm.state_dict(),
-             "encoder": encoder.state_dict(),
+    state = {"prompts_contexts_plm": prompts_contexts_plm.state_dict(),
+             "responses_plm": responses_plm.state_dict(),
+             "cls": cls.state_dict(),
              "optimizer": optimizer.state_dict()}
     torch.save(state, save_path)
 
@@ -93,18 +92,19 @@ def log_progress(args, epoch, loss_total, loss_average, path, cls_report=None):
         if cls_report:
             f.write(f'Classification report:\n{cls_report}')
 
-def export_prediction(df, labels_pred, ids_to_labels, path, 
-                      csv_name='submit.csv', zip_name='submit'):
+def export_prediction(df, labels_pred, ids_to_labels, path, csv_name, zip_name):
     pred_dict = {'id': df['ids'].tolist(),
                  'predict_label': map(ids_to_labels.get, labels_pred)}
     pd.DataFrame(pred_dict).to_csv(path / csv_name, index=False)
     shutil.make_archive(path / zip_name, 'zip', path, csv_name)
 
-def test_best_model(args, labels_to_ids, dataloader, model_path, plm, pvm, encoder):
+def test_best_model(args, labels_to_ids, dataloader, model_path, 
+                    prompts_contexts_plm, responses_plm, cls):
     saved_models = sorted(float(model[:-3]) for model in os.listdir(model_path) if model.split('.')[-1] == 'pt')
     state = torch.load(model_path / f'{saved_models[-1]}.pt', weights_only=False)
-    plm.load_state_dict(state['plm'])
-    pvm.load_state_dict(state['pvm'])
-    encoder.load_state_dict(state['encoder'])
-    labels_true, labels_pred = test_step(args, plm, pvm, encoder, dataloader)
+    prompts_contexts_plm.load_state_dict(state['plm'])
+    responses_plm.load_state_dict(state['pvm'])
+    cls.load_state_dict(state['encoder'])
+    labels_true, labels_pred = test_step(args, prompts_contexts_plm,
+                                         responses_plm, cls, dataloader)
     return labels_true, labels_pred

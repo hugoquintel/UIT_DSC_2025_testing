@@ -1,4 +1,6 @@
 import os
+import sys
+import tqdm
 import torch
 import random
 import pathlib
@@ -83,6 +85,15 @@ def run():
     print(f'Labels to ids: {labels_to_ids}')
     print(f'Ids to labels: {ids_to_labels}\n')
 
+    if args.DEVICE == 'cuda':
+        if torch.cuda.device_count() > 1:
+            print('--Using multiple GPUs to train--\n')
+            prompts_contexts_plm = torch.nn.DataParallel(prompts_contexts_plm)
+            responses_plm = torch.nn.DataParallel(responses_plm)
+            cls = torch.nn.DataParallel(cls)
+        else: print('--Using single GPU to train--\n')
+    else: print('--No GPU detected, using CPU to train--\n')
+
     print(f'Arguments:')
     print('------------------------')
     for key, value in vars(args).items():
@@ -90,5 +101,62 @@ def run():
     print('------------------------')
 
 
-    best_macro_f1, best_accuracy, best_epoch = 0, 0, 0
+    best_macro_f1 = 0
     log_arguments(args, info_path)
+    for epoch in tqdm.trange(args.EPOCHS, file=sys.stdout):
+        print(f'\n\nEpoch {epoch}:')
+        # train
+        print('-----------')
+        loss_total, loss_average = train_step(args, prompts_contexts_plm, responses_plm,
+                                            cls, loss_function, optimizer, train_dataloader)
+        print(f'Total loss: {loss_total:.5f} | Average loss: {loss_average:.5f}')
+        print('-----------')
+        # test
+        labels_dev_true, labels_dev_pred = test_step(args, prompts_contexts_plm,
+                                                     responses_plm, cls, dev_dataloader)
+        
+        if args.GET_METRICS:
+            cls_report, macro_f1 = get_metrics(labels_dev_true, labels_dev_pred, labels_to_ids)
+            print('[+] METRICS:')
+            print(f'Classification report:\n{cls_report}')
+            log_progress(args, epoch, loss_total, loss_average, info_path, cls_report)
+            if args.PLOT_CONFMAT:
+                plot_confmat(args, labels_dev_true, labels_dev_pred, ids_to_labels, labels_to_ids)
+            if args.SAVE_MODEL:
+                if macro_f1 > best_macro_f1:
+                    best_macro_f1 = macro_f1
+                    save_model(prompts_contexts_plm, responses_plm, cls, 
+                               optimizer, model_path, f"{round(best_macro_f1, 4)}.pt")
+                    saved_models = sorted(float(model[:-3]) for model in os.listdir(model_path) if model.split('.')[-1] == 'pt')
+                    if len(saved_models) > args.MODELS_LIMIT:
+                        os.remove(model_path / f'{saved_models[0]}.pt')
+
+        else:
+            log_progress(args, epoch, loss_total, loss_average, info_path)
+            if args.SAVE_MODEL:
+                save_model(prompts_contexts_plm, responses_plm, cls,
+                           optimizer, model_path, f'epoch_{epoch}.pt')
+                saved_models = sorted(int(model[:-3].split('_')[1]) for model in os.listdir(model_path) if model.split('.')[-1] == 'pt')
+                if len(saved_models) > args.MODELS_LIMIT:
+                    os.remove(model_path / f'epoch_{saved_models[0]}.pt')
+
+        if args.EXPORT_PREDICTION:
+            if args.PREDICTION_PER_EPOCH:
+                export_prediction(dev_df, labels_dev_pred, ids_to_labels, pred_path, 
+                                  csv_name=f'epoch_{epoch}.csv', zip_name='prediction')
+            else:
+                export_prediction(dev_df, labels_dev_pred, ids_to_labels, pred_path,
+                                  csv_name=f'prediction.csv', zip_name='prediction')
+                
+    if args.TEST_BEST_MODEL and args.GET_METRICS and args.SAVE_MODEL:
+        print('\n\n\n******TESTING THE BEST MODEL******')
+        labels_dev_true, labels_dev_pred = test_best_model(args, labels_to_ids, dev_dataloader, model_path,
+                                                           prompts_contexts_plm, responses_plm, cls)
+        cls_report, _, _ = get_metrics(labels_dev_true, labels_dev_pred, labels_to_ids)
+        print('[+] METRICS:')
+        print(f'Classification report:\n{cls_report}')
+        if args.PLOT_CONFMAT:
+            plot_confmat(args, labels_dev_true, labels_dev_pred, ids_to_labels, labels_to_ids)
+        if args.EXPORT_PREDICTION:
+            export_prediction(labels_dev_pred, ids_to_labels, pred_path, 'best_prediction.csv')
+        print('**************FINISH**************')

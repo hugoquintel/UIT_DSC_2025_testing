@@ -3,11 +3,26 @@ import pandas as pd
 from pyvi import ViTokenizer
 from torch.utils.data import Dataset
 
-def get_labels(df):
-    labels = df['labels'].unique()
-    labels_to_ids = {label:index for index, label in enumerate(labels)}
-    ids_to_labels = {index:label for label, index in labels_to_ids.items()}
-    return labels_to_ids, ids_to_labels
+def make_dummy_data(data_path, dataset, dummy_path, no_samples, dev_size):
+    df = pd.read_csv(data_path / f'{dataset}.csv')
+    dummy_path.mkdir(parents=True, exist_ok=True)
+    labels_count = df['label'].value_counts()
+    unique_labels = labels_count.index
+    no_labels = labels_count.sum()
+
+    dummy_labels_count = {label: round(value/no_labels*no_samples) for label, value in zip(unique_labels, labels_count)}
+    train_labels_count, dev_labels_count = {}, {}
+    for label in dummy_labels_count:
+        dev_labels_count[label] = round(dummy_labels_count[label]*dev_size)
+        train_labels_count[label] = dummy_labels_count[label]-dev_labels_count[label]
+
+
+    train_df, dev_df = pd.DataFrame(), pd.DataFrame()
+    for label in unique_labels:
+        train_df = pd.concat([train_df, df[df['label']==label].iloc[:train_labels_count[label]]], axis=0)
+        dev_df = pd.concat([dev_df, df[df['label']==label].iloc[train_labels_count[label]:train_labels_count[label]+dev_labels_count[label]]], axis=0)
+    train_df.sample(frac=1, ignore_index=True).to_csv(dummy_path / 'train.csv', index=False)
+    dev_df.sample(frac=1, ignore_index=True).to_csv(dummy_path / 'dev.csv', index=False)
 
 def preprocess_data(args, path, dataset, tokenizer):
     df = pd.read_csv(path / f'{dataset}.csv')
@@ -29,6 +44,12 @@ def preprocess_data(args, path, dataset, tokenizer):
                  'responses_attention_mask': responses_output.attention_mask,
                  'labels': df['label']}
     return pd.DataFrame(data_dict)
+
+def get_labels(df):
+    labels = df['labels'].unique()
+    labels_to_ids = {label:index for index, label in enumerate(labels)}
+    ids_to_labels = {index:label for label, index in labels_to_ids.items()}
+    return labels_to_ids, ids_to_labels
 
 class LLMHallucinationDataset(Dataset):
     def __init__(self, df):

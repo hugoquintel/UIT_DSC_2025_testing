@@ -9,34 +9,29 @@ def get_arguments():
                         help='Number of training epochs')
     parser.add_argument('--PLM', type=str, default='vinai/phobert-base-v2',
                         help='HuggingFace pre-trained language model (https://huggingface.co/models)')
-    parser.add_argument('--PLM_OUTPUT_SIZE', type=int, default=768,
-                        help='The output size of HuggingFace pre-trained language model (usually 768 for any base models)')
-    parser.add_argument('--PLM_MAX_TOKEN', type=int, default=200,
+
+    parser.add_argument('--PROMPT_CONTEXT_MAX_TOKEN', type=int, default=350,
                         help='Max number of tokens when tokenized by the pre-trained tokenizer')
+    parser.add_argument('--RESPONSE_MAX_TOKEN', type=int, default=90,
+                        help='Max number of tokens when tokenized by the pre-trained tokenizer')
+    
     parser.add_argument('--WORD_SEG', type=strtobool, default=True,
                         help='Apply word segmentation to the images\' captions; this only works with Vietnamese \
                               (should be set to True only when working with language models requiring word segmentation, e.g., PhoBert).')
-    parser.add_argument('--SEG_PLM', type=str, default='NlpHUST/vi-word-segmentation',
-                        help='HuggingFace pre-trained language model used for word segmentation')
-    parser.add_argument('--PVM', type=str, default='timm/vit_base_patch16_224.augreg2_in21k_ft_in1k',
-                        help='timm pre-trained vision model (https://huggingface.co/timm/models)')
-    parser.add_argument('--PVM_OUTPUT_SIZE', type=int, default=768,
-                        help='The output size of timm pre-trained vision model (e.g, 768 for ViT, 2048 for Resnet)')
+
     parser.add_argument('--PLM_LR', type=float, default=1e-5,
                         help='Learning rate for pre-trained language model')
-    parser.add_argument('--PVM_LR', type=float, default=1e-5,
-                        help='Learning rate for pre-trained vision model')
-    parser.add_argument('--ENCODER_LR', type=float, default=1e-4,
+    parser.add_argument('--CLS_LR', type=float, default=1e-4,
                         help='Learning rate for the encoder block')
     parser.add_argument('--OPTIMIZER', type=str, default='AdamW',
                         help='Pytorch optimizer (check torch.optim for the full list)')
-    parser.add_argument('--TRAIN_BATCH', type=int, default=32,
+    parser.add_argument('--TRAIN_BATCH', type=int, default=8,
                         help='Number of instances in a batch during training')
-    parser.add_argument('--DEV_BATCH', type=int, default=16,
+    parser.add_argument('--DEV_BATCH', type=int, default=4,
                         help='Number of instances in a batch during testing')
-    parser.add_argument('--PRINT_BATCH', type=int, default=50,
+    parser.add_argument('--PRINT_BATCH', type=int, default=200,
                         help='Print loss after a number of batches')
-    parser.add_argument('--RANDOM_SEED', type=int, default=2024,
+    parser.add_argument('--RANDOM_SEED', type=int, default=2025,
                         help='Random seed')
     parser.add_argument('--DATA_PATH', type=str, default='data',
                         help='Path to data directory')
@@ -47,9 +42,9 @@ def get_arguments():
                         help='Create path to dummy data directory')
     parser.add_argument('--DUMMY_DATASET', type=str, default='train',
                         help='The original dataset that will be used to make dummy data')
-    parser.add_argument('--DUMMY_SAMPLES', type=int, default=5000,
+    parser.add_argument('--DUMMY_SAMPLES', type=int, default=7000,
                         help='Number of samples in the dummy dataset (must be equal or smaller than the original dataset)')
-    parser.add_argument('--DUMMY_DEV_SIZE', type=float, default=0.2,
+    parser.add_argument('--DUMMY_DEV_SIZE', type=float, default=0.1,
                         help='The proportion of the dummy dataset to include in the dev split (between 0.0 and 1.0)')
     parser.add_argument('--GET_METRICS', type=strtobool, default=False,
                         help='Perform evaluation on the devset and show the metrics - sklearn classification report \
