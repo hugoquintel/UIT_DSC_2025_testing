@@ -39,7 +39,7 @@ def preprocess_data(args, path, dataset, tokenizer):
                  'prompts_contexts_attention_mask': prompts_contexts_output.attention_mask,
                  'responses_input_ids': responses_output.input_ids,
                  'responses_attention_mask': responses_output.attention_mask,
-                 'labels': df[[column for column in df.columns if 'label' in column]].tolist()}
+                 'labels': df[[column for column in df.columns if 'label' in column][0]].tolist()}
     return pd.DataFrame(data_dict)
 
 def get_labels(df):
