@@ -43,6 +43,12 @@ def get_arguments():
                         help='Number of samples in the dummy dataset (must be equal or smaller than the original dataset)')
     parser.add_argument('--DUMMY_DEV_SIZE', type=float, default=0.1,
                         help='The proportion of the dummy dataset to include in the dev split (between 0.0 and 1.0)')
+    
+    parser.add_argument('--CONTINUE_FROM_CHECKPOINT', type=strtobool, default=False,
+                        help='asdasd')
+    parser.add_argument('--CHECKPOINT_PATH', type=str,
+                        help='asdasd')
+    
     parser.add_argument('--GET_METRICS', type=strtobool, default=False,
                         help='Perform evaluation on the devset and show the metrics - sklearn classification report \
                              (Set to True only when the devset has labels or else the result will be wrong)')
