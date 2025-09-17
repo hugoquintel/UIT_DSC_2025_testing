@@ -7,22 +7,19 @@ def get_arguments():
     parser = argparse.ArgumentParser('Hyperparameters for training and some additional arguments')
     parser.add_argument('--EPOCHS', type=int, default=5,
                         help='Number of training epochs')
-    parser.add_argument('--PLM', type=str, default='vinai/phobert-base-v2',
+    parser.add_argument('--PLM', type=str, default='Fsoft-AIC/videberta-base',
                         help='HuggingFace pre-trained language model (https://huggingface.co/models)')
-
     parser.add_argument('--PROMPT_CONTEXT_MAX_TOKEN', type=int, default=350,
                         help='Max number of tokens when tokenized by the pre-trained tokenizer')
     parser.add_argument('--RESPONSE_MAX_TOKEN', type=int, default=90,
                         help='Max number of tokens when tokenized by the pre-trained tokenizer')
-    
     parser.add_argument('--WORD_SEG', type=strtobool, default=True,
                         help='Apply word segmentation to the images\' captions; this only works with Vietnamese \
                               (should be set to True only when working with language models requiring word segmentation, e.g., PhoBert).')
-
     parser.add_argument('--PLM_LR', type=float, default=1e-5,
                         help='Learning rate for pre-trained language model')
     parser.add_argument('--CLS_LR', type=float, default=1e-4,
-                        help='Learning rate for the encoder block')
+                        help='Learning rate for the classifier block')
     parser.add_argument('--OPTIMIZER', type=str, default='AdamW',
                         help='Pytorch optimizer (check torch.optim for the full list)')
     parser.add_argument('--TRAIN_BATCH', type=int, default=8,

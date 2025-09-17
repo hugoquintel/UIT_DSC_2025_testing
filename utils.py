@@ -102,9 +102,9 @@ def test_best_model(args, labels_to_ids, dataloader, model_path,
                     prompts_contexts_plm, responses_plm, cls):
     saved_models = sorted(float(model[:-3]) for model in os.listdir(model_path) if model.split('.')[-1] == 'pt')
     state = torch.load(model_path / f'{saved_models[-1]}.pt', weights_only=False)
-    prompts_contexts_plm.load_state_dict(state['plm'])
-    responses_plm.load_state_dict(state['pvm'])
-    cls.load_state_dict(state['encoder'])
+    prompts_contexts_plm.load_state_dict(state['prompts_contexts_plm'])
+    responses_plm.load_state_dict(state['responses_plm'])
+    cls.load_state_dict(state['cls'])
     labels_true, labels_pred = test_step(args, prompts_contexts_plm,
                                          responses_plm, cls, dataloader)
     return labels_true, labels_pred
