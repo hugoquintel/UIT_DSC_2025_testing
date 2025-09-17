@@ -129,7 +129,7 @@ def run():
             print(f'Classification report:\n{cls_report}')
             log_progress(args, epoch, loss_total, loss_average, info_path, cls_report)
             if args.PLOT_CONFMAT:
-                plot_confmat(args, labels_dev_true, labels_dev_pred, ids_to_labels, labels_to_ids)
+                plot_confmat(args, labels_dev_true, labels_dev_pred, labels_to_ids)
             if args.SAVE_MODEL:
                 if macro_f1 > best_macro_f1:
                     best_macro_f1 = macro_f1
@@ -164,7 +164,7 @@ def run():
         print('[+] METRICS:')
         print(f'Classification report:\n{cls_report}')
         if args.PLOT_CONFMAT:
-            plot_confmat(args, labels_dev_true, labels_dev_pred, ids_to_labels, labels_to_ids)
+            plot_confmat(args, labels_dev_true, labels_dev_pred, labels_to_ids)
         if args.EXPORT_PREDICTION:
             export_prediction(labels_dev_pred, ids_to_labels, pred_path, 'best_prediction.csv')
         print('**************FINISH**************')
