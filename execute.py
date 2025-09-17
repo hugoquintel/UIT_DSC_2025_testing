@@ -51,8 +51,8 @@ def run():
     dev_df = preprocess_data(args, data_path, 'dev', tokenizer)
 
     labels_to_ids, ids_to_labels = get_labels(train_df)
-    train_df['labels'] = train_df['labels'].map(labels_to_ids).fillna(train_df['labels']).astype(int)
-    dev_df['labels'] = dev_df['labels'].map(labels_to_ids).fillna(dev_df['labels']).astype(int)
+    train_df['labels'] = train_df['labels'].map(labels_to_ids).fillna(0).astype(int)
+    dev_df['labels'] = dev_df['labels'].map(labels_to_ids).fillna(0).astype(int)
 
     train_data = LLMHallucinationDataset(train_df)
     dev_data = LLMHallucinationDataset(dev_df)
