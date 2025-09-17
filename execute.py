@@ -60,9 +60,8 @@ def run():
     no_workers = os.cpu_count()
     train_dataloader = DataLoader(train_data, batch_size=args.TRAIN_BATCH, shuffle=True,
                                   pin_memory=True, num_workers=no_workers)
-    dev_dataloader = DataLoader(dev_data, batch_size=args.TEST_BATCH, shuffle=False,
+    dev_dataloader = DataLoader(dev_data, batch_size=args.DEV_BATCH, shuffle=False,
                                 pin_memory=True, num_workers=no_workers)
-    
     
     prompts_contexts_plm = AutoModel.from_pretrained(args.PLM).to(args.DEVICE)
     responses_plm = AutoModel.from_pretrained(args.PLM).to(args.DEVICE)
