@@ -42,7 +42,8 @@ def run():
     data_path = pathlib.Path(args.DATA_PATH)
     if args.USE_DUMMY:
         dummy_path = pathlib.Path(args.DUMMY_PATH)
-        make_dummy_data(data_path, args.DUMMY_DATASET, dummy_path, args.DUMMY_SAMPLES, dev_size=args.DUMMY_DEV_SIZE, shuffle=True)
+        make_dummy_data(data_path, args.DUMMY_DATASET, dummy_path, 
+                        args.DUMMY_SAMPLES, dev_size=args.DUMMY_DEV_SIZE)
         data_path = pathlib.Path(args.DUMMY_PATH)
 
     tokenizer = AutoTokenizer.from_pretrained(args.PLM)
