@@ -64,11 +64,11 @@ def get_arguments():
     parser.add_argument('--SAVE_PATH', type=str, default='saved_models',
                         help='Create a folder (if not exist) to store all the saved models')
     parser.add_argument('--EXPORT_PREDICTION', type=strtobool, default=False,
-                        help='Whether to export the predicted result')
+                        help='Whether to export the predicted result (.csv and zip folder)')
     parser.add_argument('--PREDICTION_PATH', type=str, default='prediction',
                         help='Create a folder (if not exist) to store the prediction file')
     parser.add_argument('--PREDICTION_PER_EPOCH', type=strtobool, default=False,
-                        help='Whether to export the prediction result at each epoch, if no then just at the latest epoch')
+                        help='Whether to export the prediction result at each epoch (zip the latest epoch), if no then just at the latest epoch')
     parser.add_argument('--TEST_BEST_MODEL', type=strtobool, default=True,
                         help='Evaluate the performance of the best model on the valset (SAVE_MODEL and GET_METRICS must be True)')
     parser.add_argument('--INFO_PATH', type=str, default='info',
