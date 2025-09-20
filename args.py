@@ -25,7 +25,7 @@ def get_arguments():
     parser.add_argument('--TRAIN_BATCH', type=int, default=8,
                         help='Number of instances in a batch during training')
     parser.add_argument('--DEV_BATCH', type=int, default=4,
-                        help='Number of instances in a batch during testing')
+                        help='Number of instances in a batch during inference')
     parser.add_argument('--PRINT_BATCH', type=int, default=200,
                         help='Print loss after a number of batches')
     parser.add_argument('--RANDOM_SEED', type=int, default=2025,
@@ -46,7 +46,7 @@ def get_arguments():
     
     parser.add_argument('--CONTINUE_FROM_CHECKPOINT', type=strtobool, default=False,
                         help='Whether to continue training from a previously saved model')
-    parser.add_argument('--CHECKPOINT_PATH', type=str,
+    parser.add_argument('--   ', type=str, default='',
                         help='Path to the saved model if continuing training from one')
     
     parser.add_argument('--GET_METRICS', type=strtobool, default=False,
