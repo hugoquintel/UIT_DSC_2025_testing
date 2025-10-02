@@ -78,16 +78,6 @@ def run():
     optimizer = optimizer_map[args.OPTIMIZER](train_params)
     loss_function = nn.CrossEntropyLoss()
 
-    if args.CONTINUE_FROM_CHECKPOINT:
-        print('Loading model from checkpoint...')
-        checkpoint_path = pathlib.Path(args.CHECKPOINT_PATH)
-        state = torch.load(checkpoint_path, weights_only=False)
-        prompts_contexts_plm.load_state_dict(state['prompts_contexts_plm'])
-        responses_plm.load_state_dict(state['responses_plm'])
-        cls.load_state_dict(state['cls'])
-        optimizer.load_state_dict(state['optimizer'])
-        print('Finished loading model\n')
-
     print(f'Number of samples in train set: {len(train_data)}')
     print(f'Number of samples in dev set: {len(dev_data)}')
     print(f'Number of train batches: {len(train_dataloader)}')
@@ -103,6 +93,16 @@ def run():
             cls = torch.nn.DataParallel(cls)
         else: print('--Using single GPU to train--\n')
     else: print('--No GPU detected, using CPU to train--\n')
+
+    if args.CONTINUE_FROM_CHECKPOINT:
+        print('Loading model from checkpoint...')
+        checkpoint_path = pathlib.Path(args.CHECKPOINT_PATH)
+        state = torch.load(checkpoint_path, weights_only=False)
+        prompts_contexts_plm.load_state_dict(state['prompts_contexts_plm'])
+        responses_plm.load_state_dict(state['responses_plm'])
+        cls.load_state_dict(state['cls'])
+        optimizer.load_state_dict(state['optimizer'])
+        print('Finished loading model\n')
 
     print(f'Arguments:')
     print('------------------------')

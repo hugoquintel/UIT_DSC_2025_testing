@@ -46,7 +46,7 @@ def get_arguments():
     
     parser.add_argument('--CONTINUE_FROM_CHECKPOINT', type=strtobool, default=False,
                         help='Whether to continue training from a previously saved model')
-    parser.add_argument('--   ', type=str, default='',
+    parser.add_argument('--CHECKPOINT_PATH', type=str, default='',
                         help='Path to the saved model if continuing training from one')
     
     parser.add_argument('--GET_METRICS', type=strtobool, default=False,
